@@ -6,7 +6,8 @@
 #include <string.h>
 #include <math.h>
 
-typedef struct processo{
+typedef struct processo
+{
 	int tempoProcessamento;
 	int tempoPreparacao;
 	int tempoEntrega;
@@ -19,6 +20,8 @@ void insere(int processamento, int preparacao, int entrega, processo *p);
 void exibe(processo *lista);
 void lerArquivo(char *url[], processo *lista);
 void iniciaLista(processo *lista);
+processo *buscaR (processo *lista);
+void buscaLocal(processo *lista);
 
 #endif
 
@@ -43,7 +46,8 @@ int parseInt(char* chars)
     return sum;
 }
 
-void insere(int processamento, int preparacao, int entrega, processo *p){
+void insere(int processamento, int preparacao, int entrega, processo *p)
+{
 	processo *novo;
 	novo =(processo *) malloc (sizeof (processo));
 	novo->tempoProcessamento = processamento;
@@ -53,7 +57,8 @@ void insere(int processamento, int preparacao, int entrega, processo *p){
 	p->prox = novo;
 }
 
-void exibe(processo *lista){
+void exibe(processo *lista)
+{
 	int contador = 0;
 	
 	while(lista->prox != NULL){
@@ -69,7 +74,8 @@ void exibe(processo *lista){
 	}
 }
 
-void lerArquivo(char *url[], processo *lista){
+void lerArquivo(char *url[], processo *lista)
+{
 	FILE *arquivo;
 	char a[5],b[5],c[5];
 	arquivo = fopen(url,"r");
@@ -80,6 +86,23 @@ void lerArquivo(char *url[], processo *lista){
 	}
 
 	fclose(arquivo);
+}
+
+processo *buscaR (processo *lista)
+{
+	int x = lista->tempoEntrega;
+   	if (lista == NULL)  return NULL;
+   	if (lista->tempoEntrega >= x)  return lista;
+   	return buscaR (lista->prox);
+}
+
+void buscaLocal(processo *lista)
+{
+	while(lista->prox != NULL){
+		processo *temp = buscaR(lista);
+		lista = lista->prox;
+		printf("%d %d %d\n", temp->tempoProcessamento, temp->tempoPreparacao, temp->tempoEntrega);
+	}
 }
 
 void iniciaLista(processo *lista){

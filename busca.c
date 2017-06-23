@@ -8,6 +8,6 @@ int main(int argc, int *argv[]){
 	processo *lista;
 	iniciaLista(&lista);
 	lerArquivo(argv[1],&lista);
-	exibe(&lista);
+	buscaLocal(&lista);
 	printf("concluido com sucesso\n");
 }
