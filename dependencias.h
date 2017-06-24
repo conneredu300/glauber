@@ -22,6 +22,7 @@ void lerArquivo(char *url[], processo *lista);
 void iniciaLista(processo *lista);
 processo *buscaR (processo *lista);
 void buscaLocal(processo *lista);
+void finalizaLista(processo *lista);
 
 #endif
 
@@ -46,32 +47,26 @@ int parseInt(char* chars)
     return sum;
 }
 
-void insere(int processamento, int preparacao, int entrega, processo *p)
+void insere(int processamento, int preparacao, int entrega, processo *lista)
 {
-	processo *novo;
-	novo =(processo *) malloc (sizeof (processo));
+	processo *novo = malloc (sizeof (processo));
+	processo *velho = lista->prox;
+	
 	novo->tempoProcessamento = processamento;
 	novo->tempoPreparacao = preparacao;
 	novo->tempoEntrega = entrega;
-	novo->prox = p->prox;
-	p->prox = novo;
+	
+	lista->prox = novo;
+	novo->prox = velho;
 }
 
 void exibe(processo *lista)
 {
-	int contador = 0;
-	
-	while(lista->prox != NULL){
-		printf("\n%d° %d %d %d",
-		contador,
-		lista->tempoProcessamento,
-		lista->tempoPreparacao,
-		lista->tempoEntrega		
-		);
-	
-	contador++;
-	lista = lista->prox;
+	if(lista->tempoEntrega >= 0 && lista->prox != NULL) {
+		printf("%d %d %d\n", lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
+		return exibe(lista->prox);
 	}
+	printf("Fim da lista\n");
 }
 
 void lerArquivo(char *url[], processo *lista)
@@ -90,19 +85,36 @@ void lerArquivo(char *url[], processo *lista)
 
 processo *buscaR (processo *lista)
 {
-	int x = lista->tempoEntrega;
-   	if (lista == NULL)  return NULL;
-   	if (lista->tempoEntrega >= x)  return lista;
-   	return buscaR (lista->prox);
+
+}
+
+int buscaMenorValor (processo *lista){
+	int menorValor;
+	int temp = 0;
+
+	while(lista->prox != NULL){
+
+		if(lista->tempoEntrega >= 0){
+			if(temp <= lista->tempoEntrega){
+				menorValor = temp;
+			}else{
+				menorValor = lista->tempoEntrega;
+			}
+		}
+
+		printf("%d\n", menorValor);
+		lista = lista->prox;
+	}
+
+	printf("%d\n", menorValor);
+	return menorValor;
 }
 
 void buscaLocal(processo *lista)
 {
-	while(lista->prox != NULL){
-		processo *temp = buscaR(lista);
-		lista = lista->prox;
-		printf("%d %d %d\n", temp->tempoProcessamento, temp->tempoPreparacao, temp->tempoEntrega);
-	}
+	processo *menor;
+	menor = buscaR(lista);
+	printf("%d\n",menor->tempoEntrega);
 }
 
 void iniciaLista(processo *lista){

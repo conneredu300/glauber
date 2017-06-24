@@ -6,8 +6,12 @@
 
 int main(int argc, int *argv[]){
 	processo *lista;
-	iniciaLista(&lista);
+	int menor;
+	iniciaLista(lista);
 	lerArquivo(argv[1],&lista);
-	buscaLocal(&lista);
+	// buscaMenorValor(&lista);
+	exibe(&lista);
 	printf("concluido com sucesso\n");
+
+	return 0;
 }
