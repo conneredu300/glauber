@@ -5,12 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <sys/wait.h>
+
+int tamanho = 0;
 
 typedef struct processo
 {
 	int tempoProcessamento;
 	int tempoPreparacao;
 	int tempoEntrega;
+	int index;
 	struct processo* prox;
 }processo;
 
@@ -20,7 +24,6 @@ void insere(int processamento, int preparacao, int entrega, processo *p);
 void exibe(processo *lista);
 void lerArquivo(char *url[], processo *lista);
 void iniciaLista(processo *lista);
-processo *buscaR (processo *lista);
 void buscaLocal(processo *lista);
 void finalizaLista(processo *lista);
 
@@ -49,28 +52,39 @@ int parseInt(char* chars)
 
 void insere(int processamento, int preparacao, int entrega, processo *lista)
 {
+	tamanho++;
 	processo *novo = malloc (sizeof (processo));
 	processo *velho = lista->prox;
 	
 	novo->tempoProcessamento = processamento;
 	novo->tempoPreparacao = preparacao;
 	novo->tempoEntrega = entrega;
-	
+	novo->index = tamanho;
 	lista->prox = novo;
 	novo->prox = velho;
 }
 
 void exibe(processo *lista)
 {
-	if(lista->tempoEntrega >= 0 && lista->prox != NULL) {
-		printf("%d %d %d\n", lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
-		return exibe(lista->prox);
+	int contador = 0;
+
+	while(lista->prox != NULL){
+		contador++;
+		printf("%d %d %d %d\n",lista->index, lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
+		if(contador == tamanho+1){
+			break;
+		}
+		lista = lista->prox;
 	}
+
 	printf("Fim da lista\n");
 }
 
 void lerArquivo(char *url[], processo *lista)
 {
+	system("clear");
+	printf("Aguarde, lendo arquivo...\n");
+	sleep(1);
 	FILE *arquivo;
 	char a[5],b[5],c[5];
 	arquivo = fopen(url,"r");
@@ -81,42 +95,108 @@ void lerArquivo(char *url[], processo *lista)
 	}
 
 	fclose(arquivo);
+	sleep(3);
 }
 
-processo *buscaR (processo *lista)
-{
-
-}
-
-int buscaMenorValor (processo *lista){
-	int menorValor;
-	int temp = 0;
+int buscaMenorValorNaLista (processo *lista){
+	int contador = 0;
+	int index;
 
 	while(lista->prox != NULL){
+		contador++;
 
-		if(lista->tempoEntrega >= 0){
-			if(temp <= lista->tempoEntrega){
-				menorValor = temp;
-			}else{
-				menorValor = lista->tempoEntrega;
-			}
+		if(lista->tempoEntrega <= 0){
+			index = lista->index;
 		}
 
-		printf("%d\n", menorValor);
 		lista = lista->prox;
+		
+		if(contador == tamanho+1)
+			break;
+
 	}
 
-	printf("%d\n", menorValor);
-	return menorValor;
+	return index;
+}
+
+int buscaMenorValor (processo *lista, int valor){
+	int contador = 0;
+	int index;
+
+	while(lista->prox != NULL){
+		contador++;
+
+		if(lista->tempoEntrega <= valor){
+			index = lista->index;
+		}else{
+			index = valor;
+		}
+
+		lista = lista->prox;
+		
+		if(contador == tamanho+1)
+			break;
+
+	}
+
+	return index;
+}
+
+void exibePosicao(int x, processo *lista){
+	int contador = 0;
+	
+	while(lista->prox != NULL){
+		contador++;
+
+		if(contador == tamanho+1)
+			break;
+		
+		if(lista->index == x){
+			printf("%d %d %d %d\n", lista->index, lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
+		}
+
+		lista = lista->prox;
+	}
+}
+
+void exibePosicaoR(int x, processo *lista){
+	if(lista->prox == NULL) return NULL;
+	
+	if(lista->index == x){
+		printf("%d %d %d %d\n", lista->index, lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
+	}
+
+	return exibePosicaoR(x,lista->prox);
 }
 
 void buscaLocal(processo *lista)
 {
-	processo *menor;
-	menor = buscaR(lista);
-	printf("%d\n",menor->tempoEntrega);
+	int index = buscaMenorValorNaLista(lista);
+	int contador = tamanho;
+	int temp;
+
+	while(lista != NULL){
+		exibePosicaoR(contador, lista);
+		lista = lista->prox;
+		contador--;
+
+		if(contador == 0)
+			break;
+	}
 }
 
 void iniciaLista(processo *lista){
 	lista = NULL;
+}
+
+void status(int estado){
+	int peso,i;
+
+	peso = (tamanho - estado)/100;
+	system("clear");
+	printf("Contagem Regressiva: %d\n",peso);
+}
+
+void insereNo(processo *lista, processo *no){
+	insere(no->tempoPreparacao, no->tempoProcessamento, no->tempoEntrega, &lista);
 }
