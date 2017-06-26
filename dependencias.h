@@ -159,29 +159,43 @@ void exibePosicao(int x, processo *lista){
 	}
 }
 
-void exibePosicaoR(int x, processo *lista){
-	if(lista->prox == NULL) return NULL;
-	
-	if(lista->index == x){
-		printf("%d %d %d %d\n", lista->index, lista->tempoProcessamento, lista->tempoPreparacao, lista->tempoEntrega);
-	}
+void removerIndice(int index, processo *lista){
+	processo *temp;
+	int contador = 0;
 
-	return exibePosicaoR(x,lista->prox);
+	while(lista->prox != NULL){
+		contador++;
+
+		if(lista->index == index){
+			temp = lista->prox;
+			lista->prox = NULL;
+			free(lista);
+			lista = temp;
+			lista->index = index;
+			tamanho--;
+		}
+
+		if(contador == tamanho+1)
+			break;
+
+		lista = lista->prox;
+	}
 }
 
 void buscaLocal(processo *lista)
 {
-	int index = buscaMenorValorNaLista(lista);
-	int contador = tamanho;
-	int temp;
+	int index,contador = 0;
 
-	while(lista != NULL){
-		exibePosicaoR(contador, lista);
-		lista = lista->prox;
-		contador--;
+	while(lista->prox != NULL){
+		contador++;
+		index = buscaMenorValorNaLista(lista);
+		exibePosicao(index,lista);
+		removerIndice(index,lista);
 
-		if(contador == 0)
+		if(contador == tamanho+1)
 			break;
+
+		lista = lista->prox;
 	}
 }
 
