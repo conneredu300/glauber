@@ -54,14 +54,17 @@ void insere(int processamento, int preparacao, int entrega, processo *lista)
 {
 	tamanho++;
 	processo *novo = malloc (sizeof (processo));
-	processo *velho = lista->prox;
-	
+	processo *inicio = lista->prox;
+
+	iniciaLista(novo);
+
 	novo->tempoProcessamento = processamento;
 	novo->tempoPreparacao = preparacao;
 	novo->tempoEntrega = entrega;
 	novo->index = tamanho;
+	novo->prox = inicio;
+
 	lista->prox = novo;
-	novo->prox = velho;
 }
 
 void exibe(processo *lista)
@@ -119,6 +122,23 @@ int buscaMenorValorNaLista (processo *lista){
 	return index;
 }
 
+processo *retornaPosicao(int x, processo *lista){
+	int contador = 0;
+	
+	while(lista->prox != NULL){
+		contador++;
+
+		if(contador == tamanho)
+			break;
+		
+		if(lista->index == x){
+			return lista;
+		}
+
+		lista = lista->prox;
+	}
+}
+
 int buscaMenorValor (processo *lista, int valor){
 	int contador = 0;
 	int index;
@@ -167,12 +187,10 @@ void removerIndice(int index, processo *lista){
 		contador++;
 
 		if(lista->index == index){
-			temp = lista->prox;
-			lista->prox = NULL;
-			free(lista);
-			lista = temp;
-			lista->index = index;
-			tamanho--;
+			   processo *lixo;
+			   lixo = lista;
+			   lista->prox = lixo->prox;
+			   free (lixo);
 		}
 
 		if(contador == tamanho+1)
@@ -182,21 +200,12 @@ void removerIndice(int index, processo *lista){
 	}
 }
 
-void buscaLocal(processo *lista)
+void grasp(processo *lista)
 {
-	int index,contador = 0;
+	processo *menor = lista->prox;
+	processo *temp;
 
-	while(lista->prox != NULL){
-		contador++;
-		index = buscaMenorValorNaLista(lista);
-		exibePosicao(index,lista);
-		removerIndice(index,lista);
-
-		if(contador == tamanho+1)
-			break;
-
-		lista = lista->prox;
-	}
+	printf("%d\n",menor->tempoEntrega);
 }
 
 void iniciaLista(processo *lista){

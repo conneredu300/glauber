@@ -10,7 +10,7 @@ int main(int argc, int *argv[]){
 	int menor;
 	iniciaLista(lista);
 	lerArquivo(argv[1],&lista);
-	buscaLocal(&lista);
+	grasp(&lista);
 	printf("concluido com sucesso\n");
 
 	return 0;
